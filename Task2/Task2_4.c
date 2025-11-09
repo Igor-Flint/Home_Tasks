@@ -1,14 +1,17 @@
 #include <stdio.h>
 
 double str2double(char str[]) {
-    double result = 0.0;
+    double res = 0.0;
     double fraction = 0.1;
     int exponent = 0;
+	double c = 0;
     int sign = 1;
-    int exp_sign = 1;
+    int expSign = 1;
+	int cSign = 1;
     int i = 0, j;
-    int has_fraction = 0;
-    int has_exponent = 0;
+    int hasFraction = 0;
+    int hasExponent = 0;
+	int hasC = 0;
     
     while (str[i] == ' ') {
         i++;
@@ -17,31 +20,29 @@ double str2double(char str[]) {
     if (str[i] == '-') {
         sign = -1;
         i++;
-    } else if (str[i] == '+') {
-        i++;
-    }
+    } else if (str[i] == '+') i++;
     
     while ((str[i] >= '0') && (str[i] <= '9')) {
-        result = result * 10.0 + (str[i] - '0');
+        res = res * 10.0 + (str[i] - '0');
         i++;
     }
     
     if (str[i] == '.') {
-        has_fraction = 1;
+        hasFraction = 1;
         i++;
         while ((str[i] >= '0') && (str[i] <= '9')) {
-            result += (str[i] - '0') * fraction;
+            res += (str[i] - '0') * fraction;
             fraction *= 0.1;
             i++;
         }
     }
     
     if ((str[i] == 'e') || (str[i] == 'E')) {
-        has_exponent = 1;
+        hasExponent = 1;
         i++;
         
         if (str[i] == '-') {
-            exp_sign = -1;
+            expSign = -1;
             i++;
         } else if (str[i] == '+') {
             i++;
@@ -52,19 +53,44 @@ double str2double(char str[]) {
             i++;
         }
     }
+	else if ((str[i] == 'c') || (str[i] == 'C')) {
+		hasC = 1;
+		++i;
+		if (str[i] == '-') {
+			cSign = -1;
+			i++;
+		}	else if (str[i] == '+') i++;
+		while ((str[i] >= '0') && (str[i] <= '9')){
+			c = c * 10 + (str[i] - '0');
+			++i;
+		}
+	}
 
-    if (has_exponent) {
-        if (exp_sign > 0) {
+    if (hasExponent) {
+        if (expSign > 0) {
             for (j = 0; j < exponent; j++) {
-                result *= 10.0;
+                res *= 10.0;
             }
         } else {
             for (j = 0; j < exponent; j++) {
-                result /= 10.0;
+                res /= 10.0;
             }
         }
-    }   
-    return sign * result;
+    }
+	if (hasC) {
+		double copyRes = res;
+		if (cSign > 0) {
+			for (j = 0; j < copyRes; j++) {
+				c *= 10.0;
+			}
+		} else {
+			for (j = 0; j < copyRes; j++) {
+				c /= 10.0;
+			}
+		}
+		res = c;
+	}
+    return sign * res;
 }
 
 int main() {
@@ -76,4 +102,4 @@ int main() {
     }
     
     return 0;
-}
+}	
